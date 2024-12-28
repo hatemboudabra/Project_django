@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="container bg-white">   
+    {% if user.is_authenticated %}
+    <form class="d-flex" method="post" action="{% url 'search'%}">
+        {% csrf_token %}
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search_bar">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+    {% endif %}
+
+    <br><p>{{ matchs_list.0.organisateur.description }}</p><br>
+</div>
+
+<div class="container">   
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+        {% for event in matchs_list %}
+            
+        <div class="col">
+            <div class="card h-100">
+                <img src={{event.image.url}} class="card-img-top" alt="{{event.match}}">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h5>Match:</h5>
+                        <h6> {{event.match}}</h6>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                    {% for group in user.groups.all %}
+                        {% if group.name == 'client_group' %}
+                        <a href="{% url 'ticket_acheter' event.id request.user.id%}" class="btn btn-primary">Acheter Ticket</a>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    <small><a href="{% url 'event_detail' event.id%}" class="btn btn-secondary">details</a></small>
+                </div>
+
+                <div class="card-footer">
+                    <small class="text-body-secondary">
+                        <center>
+                            {% if event.organisateur.categorie == 'Champions League' %}
+                                <img src="{% static 'Champions League.jpeg' %}" style="height: 40px; width: auto;" class="card-img-top" alt="{{ event.organisateur.categorie }}">
+                            {% endif %}
+                            
+                            {% if event.organisateur.categorie == 'LaLiga' %}
+                                <img src="{% static 'LaLiga.png' %}" style="height: 40px; width: auto;" class="card-img-top" alt="{{ event.organisateur.categorie }}">
+                            {% endif %}
+                            
+                            {% if event.organisateur.categorie == 'Serie A' %}
+                                <img src="{% static 'Serie A.jpeg' %}" style="height: 40px; width: auto;" class="card-img-top" alt="{{ event.organisateur.categorie }}">
+                            {% endif %}
+                            
+                            {% if event.organisateur.categorie == 'Coupe du Monde' %}
+                                <img src="{% static 'Coupe du Monde.jpeg' %}" style="height: 40px; width: auto;" class="card-img-top" alt="{{ event.organisateur.categorie }}">
+                            {% endif %}
+                        
+                            {{ event.organisateur.categorie }}
+                        </center>
+                        
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        
+
+    </div>
+</div>
+<br>
+{% endblock content %}
